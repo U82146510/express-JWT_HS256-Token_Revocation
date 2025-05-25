@@ -3,15 +3,18 @@ import { User } from '../models/User.ts';
 import {z} from 'zod';
 
 const signupSchema = z.object({
-     email:z.string().email().toLowerCase().trim(),
-     password:z.string().min(8),
+     email:z.string().email().toLowerCase().trim().max(100),
+     password:z.string().min(8).max(100)
+        .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
+        .regex(/[a-z]/, 'Must contain at least one lowercase letter')
+        .regex(/[0-9]/, 'Must contain at least one number'),
      role:z.enum(['superadmin' , 'admin' , 'editor' , 'user']).default('user')
 });
 
 export const signup = async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
     const parsed = signupSchema.safeParse(req.body);
     if(!parsed.success){
-        res.status(400).json({status:'error',message:'Malformed user or pass',errors:parsed.error.format()});
+        res.status(400).json({status:'error',message:'Validation failed',errors:parsed.error.format()});
         return;
     }
     try {
