@@ -1,6 +1,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import {z} from 'zod';
 import { fileURLToPath } from 'url';
-import path from 'path';
+import path, { parse } from 'path';
 import dotenv from 'dotenv';
 
 
@@ -24,7 +25,16 @@ const JWTConfig:{
 interface IPayload extends JwtPayload{
     id:string;
     role:'superadmin' | 'admin' | 'editor' | 'user';
+    ip:string;
+    userAgent:string;
 };
+
+const payload_schema = z.object({
+    id:z.string(),
+    role:z.enum(['superadmin','admin','editor','user']),
+    iat: z.number().optional(),
+    exp: z.number().optional(),
+});
 
 export class JWTService{
     private loadKey(){
@@ -36,13 +46,21 @@ export class JWTService{
     private jwt_secret = this.loadKey();
 
     signToken(payload:IPayload):string{
-        return jwt.sign(payload,this.jwt_secret,{
+        const parsed = payload_schema.safeParse(payload);
+        if(!parsed.success){
+            throw new Error('Invalid payload');
+        }
+        return jwt.sign(payload.data,this.jwt_secret,{
             algorithm:JWTConfig.algorithm,
             expiresIn:JWTConfig.expiresIn
         });
     };
     refreshSignToken(payload:IPayload):string{
-        return jwt.sign(payload,this.jwt_secret,{
+        const parsed = payload_schema.safeParse(payload);
+        if(!parsed.success){
+            throw new Error('Invalid payload');
+        }
+        return jwt.sign(payload.data,this.jwt_secret,{
             algorithm:JWTConfig.algorithm,
             expiresIn:JWTConfig.refreshExpiresIn
         });
