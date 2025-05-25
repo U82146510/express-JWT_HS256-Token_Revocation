@@ -2,7 +2,7 @@ import { RateLimiterRedis } from "rate-limiter-flexible";
 import {redisClient} from '../app.ts';
 import { type Request,type Response,type NextFunction } from "express";
 
-export const RateMiddleware = async()=>{
+export const RateMiddleware = ()=>{
     const rateLimiter = new RateLimiterRedis({
         storeClient:redisClient.getClient(),
         keyPrefix:'rl_http',

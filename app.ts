@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import {connectDB} from './config/atlas.ts';
 import {RedisClient} from './config/redis.ts';
-
+import {signupRoute} from './routes/signup.route.ts';
 
 const app:Application = express();
 export const redisClient = new RedisClient(); 
@@ -16,8 +16,11 @@ app.use(cors({
 }));
 
 app.use(express.json());
-
 const port:number = 3000;
+
+
+
+app.use('/auth',signupRoute);
 
 const start = async ()=>{
     try {
