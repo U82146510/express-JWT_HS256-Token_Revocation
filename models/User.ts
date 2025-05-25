@@ -11,7 +11,7 @@ interface IUser extends Document{
 
 const userSchema = new Schema<IUser>({
     email:{
-        type:String,required:true
+        type:String,lowercase:true,required:true
     },
     password:{
         type:String,minlength:8,required:true
