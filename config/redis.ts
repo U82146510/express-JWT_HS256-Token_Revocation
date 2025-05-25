@@ -91,4 +91,8 @@ export class RedisClient{
         const result = await this.client.exists(key);
         return result === 1;
     }
+    public getClient(): RedisClientType {
+        return this.client;
+    }
+    
 };
