@@ -3,7 +3,7 @@ import { User } from '../models/User.ts';
 import {z} from 'zod';
 
 const signupSchema = z.object({
-     email:z.string().email(),
+     email:z.string().email().toLowerCase().trim(),
      password:z.string().min(8),
      role:z.enum(['superadmin' , 'admin' , 'editor' , 'user']).default('user')
 });
@@ -30,7 +30,7 @@ export const signup = async(req:Request,res:Response,next:NextFunction):Promise<
             role:user.role,
             createdAt:user.createdAt,
         }
-        res.status(201).json({status:'success',message:`${user.email} Signup successfully`,data:userResponse});
+        res.status(201).json({status:'success',message:'Registration successful',data:userResponse});
     } catch (error) {
         next(error);
     }
