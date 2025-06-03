@@ -1,6 +1,7 @@
 import {type Request, type Response, type NextFunction} from 'express';
 import { User } from '../models/User.ts';
 import {z} from 'zod';
+import {emailService} from '../utils/mail.ts';
 
 const signupSchema = z.object({
      email:z.string().email().toLowerCase().trim().max(100),
@@ -33,6 +34,7 @@ export const signup = async(req:Request,res:Response,next:NextFunction):Promise<
             role:user.role,
             createdAt:user.createdAt,
         }
+        emailService(email,"Registered Successfully","Welcome to your website");
         res.status(201).json({status:'success',message:'Registration successful',data:userResponse});
     } catch (error) {
         next(error);
